@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Calc</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-dark">
+
+    <section>
+        <div class="container py-5">
+            <header class="text-center mb-5 text-light">
+                <h1 class="display-5 fw-bold">Personal Finance Visualizer</h1>
+                <p class="text-light">Track your income vs. expenses and hit your savings goals.</p>
+            </header>
+
+            <div class="row g-4 align-items-stretch">
+                <div class="col-md-3">
+                    <div class="card shadow-sm p-4 h-100">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Monthly Income (₱)</label>
+                            <input type="number" id="monthlyIncome" class="form-control" placeholder="Enter amount">
+                            <small class="text-danger d-none" id="incomeWarning">Monthly income is required</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Savings Rate (%): <span id="rateVal">20</span>%</label>
+                            <input type="range" class="form-range" id="savingsRate" min="0" max="100" value="20">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm p-4 h-100 d-flex flex-column">
+                        <label class="form-label fw-bold">Add Expense</label>
+                        <!-- expense rows scroll within fixed area; add button sits immediately below -->
+                        <div id="expenseContainer" class="mb-2 overflow-auto" style="max-height: 300px;"></div>
+                        <button class="btn btn-outline-secondary w-100 mb-2" type="button" id="addExpBtn">+ Add New Expense</button>
+                        <!-- bottom-right calculate button, pushed down by mt-auto -->
+                        <div class="mt-auto text-end">
+                            <button class="btn btn-primary" type="button" id="calcBtn">Calculate</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm p-4 h-100 d-flex flex-column">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-2">Income</h6>
+                            <div id="incomeList" class="text-dark small" style="max-height: 300px; overflow-y: auto;">
+                                <p class="text-muted">No income added</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-2">Savings Rate</h6>
+                            <div id="savingsRateList" class="text-dark small" style="max-height: 300px; overflow-y: auto;">
+                                <p class="text-muted">No savings rate added</p>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column flex-grow-1 mt-3">
+                            <h6 class="fw-bold text-dark mb-2">Expenses</h6>
+                            <div id="expensesList" class="text-dark small flex-grow-1 d-flex flex-column" style="max-height: 300px; overflow-y: auto;">
+                                <p class="text-muted">No expenses added</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container pb-5" id="financial-overview">
+        <div class="row g-4 align-items-stretch">
+            <div class="col-md-6">
+                <div class="card shadow-sm p-4 text-center h-100">
+                    <h3 class="mb-4">Financial Overview</h3>
+                        
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <p class="small text-uppercase mb-0">Income</p>
+                            <h3 id="income" class="text-primary">$0</h3>
+                        </div>
+                        <div class="col-6">
+                            <p class="small text-uppercase mb-0">Expense</p>
+                            <h3 id="expense" class="text-danger">$0</h3>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <p class="small text-uppercase mb-0">Savings</p>
+                            <h3 id="savingsAmount" class="text-success">$0</h3>
+                        </div>
+                        <div class="col-6">
+                            <p class="small text-uppercase mb-0">Remaining</p>
+                            <h3 id="remaining" class="text-warning">$0</h3>
+                        </div>
+                    </div>
+
+                    <div class="chart-container d-flex align-items-end justify-content-around bg-light border rounded">
+                        <div class="bar-wrapper">
+                            <div id="barIncomeOverview" class="bar bg-primary" style="height: 0%"></div>
+                            <span class="small mt-2 d-block">Income</span>
+                        </div>
+                        <div class="bar-wrapper">
+                            <div id="barExpenseOverview" class="bar bg-danger" style="height: 0%"></div>
+                            <span class="small mt-2 d-block">Expenses</span>
+                        </div>
+                        <div class="bar-wrapper">
+                            <div id="barSavingsOverview" class="bar bg-success" style="height: 0%"></div>
+                            <span class="small mt-2 d-block">Savings</span>
+                        </div>
+                        <div class="bar-wrapper">
+                            <div id="barRemainingOverview" class="bar bg-warning" style="height: 0%"></div>
+                            <span class="small mt-2 d-block">Remaining</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm p-4 text-center h-100">
+                    <h3 class="mb-4">Yearly Projections</h3>
+                        
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <p class="small text-uppercase mb-0">Income</p>
+                            <h3 id="yearlyIncome" class="text-primary">$0</h3>
+                        </div>
+                        <div class="col-6">
+                            <p class="small text-uppercase mb-0">Expense</p>
+                            <h3 id="yearlyExpense" class="text-danger">$0</h3>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <p class="small text-uppercase mb-0">Savings</p>
+                            <h3 id="yearlySavingsAmount" class="text-success">$0</h3>
+                        </div>
+                        <div class="col-6">
+                            <p class="small text-uppercase mb-0">Remaining</p>
+                            <h3 id="yearlyRemaining" class="text-warning">$0</h3>
+                        </div>
+                    </div>
+
+                    <div class="chart-container d-flex align-items-end justify-content-around bg-light border rounded">
+                        <div class="bar-wrapper">
+                            <div id="barIncomeYearly" class="bar bg-primary" style="height: 0%"></div>
+                            <span class="small mt-2 d-block">Income</span>
+                        </div>
+                        <div class="bar-wrapper">
+                            <div id="barExpenseYearly" class="bar bg-danger" style="height: 0%"></div>
+                            <span class="small mt-2 d-block">Expenses</span>
+                        </div>
+                        <div class="bar-wrapper">
+                            <div id="barSavingsYearly" class="bar bg-success" style="height: 0%"></div>
+                            <span class="small mt-2 d-block">Savings</span>
+                        </div>
+                        <div class="bar-wrapper">
+                            <div id="barRemainingYearly" class="bar bg-warning" style="height: 0%"></div>
+                            <span class="small mt-2 d-block">Remaining</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="index.js"></script>
+</body>
+</html>
